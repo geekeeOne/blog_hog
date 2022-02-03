@@ -1,0 +1,75 @@
+{% extends "blog_app/base.html" %}
+
+{% block content %}
+{% if post.title %}
+<p><a class="btn btn-primary btn-comment-k" href="{% url 'add_comment_to_post' pk=post.pk %}">Add Comment</a></p>
+<hr>
+<h1 class="loader posttitle-lg d-flex flex-wrap justify-content-center">{{ post.title }}</h1>
+<div class="date postdate">
+	<h2 class="posttitle-sm d-flex flex-wrap justify-content-center">by: {{ post.author }}</h2>
+</div>
+
+
+
+<div class="date postdate">
+	<h2 class="posttitle-sm d-flex flex-wrap justify-content-center">{{ post.published_date }}</h2>
+</div>
+{% else %}
+	<a class="btn btn-primary" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
+{% endif %}
+
+	<!-- <p class="posttitle">{{ post.title|safe|linebreaksbr }}</p> -->
+	<p class="postcontent d-flex flex-wrap justify-content-center">{{ post.text|safe|linebreaksbr }}</p>
+
+	{% if user.is_authenticated %}
+	<a class="btn btn-primary" href="{% url 'post_edit' pk=post.pk %}">
+		<span>Edit Post</span>
+	</a>
+	<a class="btn btn-primary" href="{% url 'post_remove' pk=post.pk %}">
+		<!-- <span class="glyphicon glyphicon-x-circle"></span> -->
+		<i class="bi bi-pencil-square">Delete</i>
+				<!-- <span class="bi bi-pencil-square"></span> -->
+
+	</a>
+
+	{% endif %}
+
+	<hr>
+	<hr>
+	
+	
+
+	<div class="container">
+		
+		{% for comment in post.comments.all %}
+		<br>
+		{% if user.is_authenticated or comment.approve_comment %}
+			{{ comment.created_date }}
+				{% if not comment.approve_comment %}
+
+				<a class="btn btn-primary" href="{% url 'comment_remove' pk=comment.pk %}">
+				<span class="glyphicon glyphicon-remove">Remove</span>
+				</a>
+				<a class="btn btn-primary" href="{% url 'comment_approve' pk=comment.pk %}">
+				<span class="glyphicon glyphicon-ok">Approve</span>
+				</a>
+
+				{% endif %}
+				<span class="d-flex flex-wrap justify-content-center"><p>Posted By: {{ comment.author }}</p></span>
+				<span class="d-flex flex-wrap justify-content-center"><p>Posted: {{ comment.create_date }}</p></span>
+				<span class="d-flex flex-wrap justify-content-center"><p>{{ comment.text|safe|linebreaks }}</p></span>
+				<hr>
+				<hr>
+
+				
+				
+
+		{% endif %}
+		{% empty %}
+		<p>No Comments!</p>
+		{% endfor %}
+		<p><a class="btn btn-primary btn-comment-k" href="{% url 'add_comment_to_post' pk=post.pk %}">Add Comment</a></p>
+	</div>
+		
+
+{% endblock %}
